@@ -1,0 +1,162 @@
+def Palletizing_Main(): 
+ # ==========================================
+  # 1. PARAMETROS GLOBAIS
+  # ==========================================
+  global speed_ms    = 0.250
+  global speed_rads  = 0.750
+  global accel_mss   = 1.200
+  global accel_radss = 1.200
+  global blend_radius_m = 0.001
+
+  # ==========================================
+  # 2. SUBPROGRAMAS DE GARRAS E I/O (MODBUS)
+  # ==========================================
+  def Pick_Box():
+    # INTERTRAVAMENTO: Sincronismo com CODESYS
+    while (modbus_get_signal_status("mb_DI_box_wait", False) == False):
+      sync()
+    end
+
+    # Referência exclusiva para a esteira
+    ref_frame_pick = p[0.813303, 0.418344, 0.071771, -0.011535, 0.001995, 1.579653]
+    set_tcp(p[-0.010256, -0.011223, 0.150000, 0.000000, 0.000000, -0.174079])
+    
+    movej([0.922169, -1.872546, -0.893162, -1.942185, 1.519662, -0.695742],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_pick,p[0.130743, 0.161184, 0.477744, 2.904730, -1.083052, -0.007550]),accel_mss,speed_ms,t=0,r=0.000)
+    movel(pose_trans(ref_frame_pick,p[0.125752, 0.151448, 0.216127, 3.104246, 0.038454, -0.030311]),accel_mss,speed_ms,t=0,r=0.000)
+    
+    # Aciona o Vácuo
+    modbus_set_output_signal("mb_tool_out", True, False)
+    sleep(0.5)
+    
+    movel(pose_trans(ref_frame_pick,p[0.130743, 0.161184, 0.477744, 2.904730, -1.083052, -0.007550]),accel_mss,speed_ms,t=0,r=0)
+    movej([0.922169, -1.872546, -0.893162, -1.942185, 1.519662, -0.695742],accel_radss,speed_rads,t=0,r=0.000)
+  end
+  
+  def Drop_Box():
+    # Desliga o Vácuo
+    modbus_set_output_signal("mb_tool_out", False, False)
+    sleep(0.5)
+    
+    # Pulso de confirmação para o CODESYS
+    modbus_set_output_signal("mb_DO_box_drop", True, False)
+    sleep(0.5)
+    modbus_set_output_signal("mb_DO_box_drop", False, False)
+  end
+
+  # ==========================================
+  # 3. CAMADAS DE PALETIZAÇÃO
+  # ==========================================
+  def Palletizing_L0():
+    # Referência exclusiva para o Pallet
+    ref_frame_drop = p[-0.416880, 0.603366, -0.235005, -0.030754, -0.030925, -3.106989]
+    blend_radius_m = 0.000
+    
+    Pick_Box()
+    movej([3.679555, -2.157524, -1.106656, -1.421140, 1.578210, -2.463759],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.581502, 0.974417, 0.254000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.679555, -2.157524, -1.106656, -1.421140, 1.578210, -2.463759],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([3.331135, -2.043850, -1.294654, -1.350979, 1.587007, -2.812092],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.576300, 0.610339, 0.254000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.331135, -2.043850, -1.294654, -1.350979, 1.587007, -2.812092],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([2.958473, -2.163091, -1.120966, -1.412896, 1.594238, -3.184737],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.571099, 0.243661, 0.254000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([2.958473, -2.163091, -1.120966, -1.412896, 1.594238, -3.184737],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([3.896535, -1.650338, -1.806800, -1.227218, 1.572210, -2.246850],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.247000, 0.968400, 0.254000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.896535, -1.650338, -1.806800, -1.227218, 1.572210, -2.246850],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([3.390756, -1.510012, -1.961139, -1.217399, 1.585612, -2.752471],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.247000, 0.596400, 0.254000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.390756, -1.510012, -1.961139, -1.217399, 1.585612, -2.752471],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([2.854765, -1.692687, -1.782732, -1.224048, 1.595711, -3.288480],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.248109, 0.238405, 0.254000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([2.854765, -1.692687, -1.782732, -1.224048, 1.595711, -3.288480],accel_radss,speed_rads,t=0,r=0)
+  end
+  
+  def Palletizing_L1():
+    ref_frame_drop = p[-0.416880, 0.603366, -0.235005, -0.030754, -0.030925, -3.106989]
+    blend_radius_m = 0.000
+    
+    Pick_Box()
+    movej([3.677688, -2.209761, -0.569848, -1.905708, 1.578261, -2.465609],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.581502, 0.974417, 0.508000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.677688, -2.209761, -0.569848, -1.905708, 1.578261, -2.465609],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([3.326790, -2.047638, -0.840821, -1.801075, 1.587106, -2.816420],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.576300, 0.610339, 0.508000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.326790, -2.047638, -0.840821, -1.801075, 1.587106, -2.816420],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([2.952643, -2.210215, -0.593573, -1.893298, 1.594327, -3.190584],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.571099, 0.243661, 0.508000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([2.952643, -2.210215, -0.593573, -1.893298, 1.594327, -3.190584],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([3.896011, -1.600748, -1.409519, -1.674090, 1.572224, -2.247373],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.247000, 0.968400, 0.508000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.896011, -1.600748, -1.409519, -1.674090, 1.572224, -2.247373],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([3.384630, -1.458743, -1.557191, -1.672706, 1.585759, -2.758598],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.247000, 0.596400, 0.508000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([3.384630, -1.458743, -1.557191, -1.672706, 1.585759, -2.758598],accel_radss,speed_rads,t=0,r=0)
+    
+    Pick_Box()
+    movej([2.846056, -1.643779, -1.386099, -1.669798, 1.595821, -3.297171],accel_radss,speed_rads,t=0,r=0)
+    movel(pose_trans(ref_frame_drop,p[0.248109, 0.238405, 0.508000, 2.221441, 2.221441, -0.000000]),accel_mss,speed_ms,t=0,r=0)
+    Drop_Box()
+    movej([2.846056, -1.643779, -1.386099, -1.669798, 1.595821, -3.297171],accel_radss,speed_rads,t=0,r=0)
+  end
+
+
+  # ==========================================
+  # 4. LOOP PRINCIPAL E SELETOR DE RECEITA
+  # ==========================================
+  
+  popup("Aperte CONTINUE para liberar os eixos e fazer o Setup (Freedrive) por 10s.", "Start", False, False, blocking=True)
+  freedrive_mode()
+  sleep(2)
+  end_freedrive_mode()
+  popup("Modo automatico inciado. Aguardando comando...", "Operacao", False, False, blocking=True)
+
+  # Ciclo de Produção Contínua
+  while (True):
+    # LÊ A RECEITA DO CODESYS NO INÍCIO DE CADA PALLET
+    receita = modbus_get_signal_status("mb_DI_two_layer", False)
+
+    # Executa a Camada 0 (Sempre)
+    Palletizing_L0()
+
+    # Se o botão de 2 layers estiver ativo no CLP, executa a Camada 1
+    if receita == True:
+      Palletizing_L1()
+     end
+    # Interação para retirar o pallet e recomeçar o ciclo
+    popup("Pallet finalizado! Retire-o e aperte CONTINUE para iniciar um novo pallet.", "Status", False, False, blocking=True)
+  end
+
+end
+Palletizing_Main()
+end
