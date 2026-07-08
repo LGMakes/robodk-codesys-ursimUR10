@@ -4,10 +4,10 @@ Um projeto de integração e simulação de paletização industrial utilizando 
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Universal Robots (URSim):** Controlador atuando como Mestre Modbus e executando a lógica de movimentação nativa e cinemática em URScript.
-* **RoboDK:** Ambiente de simulação 3D, espelhando os movimentos do robô através de um script Python rodando em *background*.
-* **CODESYS:** CLP virtual gerenciando a lógica de controle do processo (Slave Modbus), gerando gatilhos de esteira e seleção de receitas.
-* **Python (Sockets TCP/IP):** Script de monitoramento contínuo operando na porta `30003` (Secondary Client Interface) para sincronizar as juntas do robô em milissegundos.
+* **Universal Robots (URSim) CB3 - UR10:** Controlador atuando como Mestre Modbus e executando a lógica de movimentação nativa e cinemática em URScript.
+* **RoboDK V6.0.5:** Ambiente de simulação 3D, espelhando os movimentos do robô através de um script Python rodando em *background*.
+* **CODESYS V3.5 SP22:** CLP virtual gerenciando a lógica de controle do processo (Slave Modbus), gerando gatilhos de esteira e seleção de receitas.
+* **Python 3 (Sockets TCP/IP):** Script de monitoramento contínuo operando na porta `30003` (Secondary Client Interface) para sincronizar as juntas do robô em milissegundos.
 
 ## Funcionalidades e Soluções
 
